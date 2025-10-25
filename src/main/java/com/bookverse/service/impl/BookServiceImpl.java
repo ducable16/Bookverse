@@ -1,8 +1,15 @@
 package com.bookverse.service.impl;
 
+import com.bookverse.dto.request.BookRequest;
+import com.bookverse.dto.response.BookResponse;
+import com.bookverse.entity.Author;
 import com.bookverse.entity.Book;
+import com.bookverse.entity.Category;
+import com.bookverse.repository.AuthorRepository;
 import com.bookverse.repository.BookRepository;
+import com.bookverse.repository.CategoryRepository;
 import com.bookverse.service.BookService;
+import com.bookverse.utils.BookMapper;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -16,54 +23,95 @@ import java.util.List;
 public class BookServiceImpl implements BookService {
 
     private final BookRepository bookRepository;
+    private final AuthorRepository authorRepository;
+    private final CategoryRepository categoryRepository;
 
     @Override
-    public Book create(Book book) {
+    public BookResponse create(BookRequest request) {
 
-        if (bookRepository.existsBySlug(book.getSlug())) {
-            throw new IllegalArgumentException("Slug already exists: " + book.getSlug());
+        String slug = generateSlug(request.getTitle());
+        if (bookRepository.existsBySlug(slug)) {
+            throw new IllegalArgumentException("Slug already exists: " + slug);
         }
 
-        return bookRepository.save(book);
+        Author author = authorRepository.findById(request.getAuthorId())
+                .orElseThrow(() -> new EntityNotFoundException("Author not found"));
+
+        List<Category> categories = categoryRepository.findAllById(request.getCategoryIds());
+
+        Book book = new Book();
+        book.setTitle(request.getTitle());
+        book.setSlug(slug);
+        book.setDescription(request.getDescription());
+        book.setCoverImage(request.getCoverImage());
+        book.setAuthor(author);
+        book.setCategories(categories);
+        book.setTotalChapters(0);
+
+        bookRepository.save(book);
+
+        return BookMapper.toResponse(book);
     }
 
     @Override
-    public Book update(Long id, Book updatedBook) {
-        Book existing = bookRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Book not found with id: " + id));
+    public BookResponse update(Long id, BookRequest request) {
 
-        existing.setTitle(updatedBook.getTitle());
-        existing.setSlug(updatedBook.getSlug());
-        existing.setDescription(updatedBook.getDescription());
-        existing.setCoverImage(updatedBook.getCoverImage());
-        existing.setAuthor(updatedBook.getAuthor());
-        existing.setCategories(updatedBook.getCategories());
-        existing.setTotalChapters(updatedBook.getTotalChapters());
+        Book book = bookRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Book not found"));
 
-        return bookRepository.save(existing);
+        String slug = generateSlug(request.getTitle());
+        if (bookRepository.existsBySlugAndIdNot(slug, id)) {
+            throw new IllegalArgumentException("Slug already exists: " + slug);
+        }
+
+        Author author = authorRepository.findById(request.getAuthorId())
+                .orElseThrow(() -> new EntityNotFoundException("Author not found"));
+
+        List<Category> categories = categoryRepository.findAllById(request.getCategoryIds());
+
+        book.setTitle(request.getTitle());
+        book.setSlug(slug);
+        book.setDescription(request.getDescription());
+        book.setCoverImage(request.getCoverImage());
+        book.setAuthor(author);
+        book.setCategories(categories);
+
+        return BookMapper.toResponse(bookRepository.save(book));
     }
 
     @Override
     public void delete(Long id) {
-//        Book existing = bookRepository.findById(id)
-//                .orElseThrow(() -> new EntityNotFoundException("Book not found with id: " + id));
-//
-//        existing.setDeleted(true);
-//        existing.setActive(false);
-//
-//        bookRepository.save(existing);
+        Book book = bookRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Book not found"));
+
+        // Soft delete
+        book.setIsDeleted(true);
+        book.setIsActive(false);
+
+        bookRepository.save(book);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public Book getById(Long id) {
-        return bookRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Book not found with id: " + id));
+    public BookResponse getById(Long id) {
+        return BookMapper.toResponse(
+                bookRepository.findById(id)
+                        .orElseThrow(() -> new EntityNotFoundException("Book not found"))
+        );
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<Book> getAll() {
-        return bookRepository.findAll();
+    public List<BookResponse> getAll() {
+        return bookRepository.findAll()
+                .stream()
+                .map(BookMapper::toResponse)
+                .toList();
+    }
+
+    private String generateSlug(String title) {
+        return title.toLowerCase()
+                .replaceAll("[^a-z0-9]+", "-")
+                .replaceAll("^-|-$", "");
     }
 }

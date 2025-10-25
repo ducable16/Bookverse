@@ -1,18 +1,15 @@
 package com.bookverse.repository;
 
-import com.bookverse.entity.Book;
+import com.bookverse.entity.Category;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
 @Repository
-public interface BookRepository extends JpaRepository<Book, Long> {
+public interface CategoryRepository extends JpaRepository<Category, Long> {
 
-    Optional<Book> findBySlug(String slug);
+    Optional<Category> findBySlug(String slug);
 
     boolean existsBySlug(String slug);
-
-    boolean existsBySlugAndIdNot(String slug, Long id);
 }
-

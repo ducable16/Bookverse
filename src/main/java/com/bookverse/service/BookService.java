@@ -1,18 +1,22 @@
 package com.bookverse.service;
 
+import com.bookverse.dto.request.BookRequest;
+import com.bookverse.dto.response.BookResponse;
 import com.bookverse.entity.Book;
 
 import java.util.List;
 
 public interface BookService {
 
-    Book create(Book book);
+    BookResponse create(BookRequest request);
 
-    Book update(Long id, Book book);
+    BookResponse update(Long id, BookRequest request);
 
     void delete(Long id);
 
-    Book getById(Long id);
+    BookResponse getById(Long id);
 
-    List<Book> getAll();
+    List<BookResponse> getAll();
 }
+
+

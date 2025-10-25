@@ -1,5 +1,7 @@
 package com.bookverse.controller;
 
+import com.bookverse.dto.request.BookRequest;
+import com.bookverse.dto.response.BookResponse;
 import com.bookverse.entity.Book;
 import com.bookverse.service.BookService;
 import lombok.RequiredArgsConstructor;
@@ -16,13 +18,16 @@ public class BookController {
     private final BookService bookService;
 
     @PostMapping
-    public ResponseEntity<Book> create(@RequestBody Book book) {
-        return ResponseEntity.ok(bookService.create(book));
+    public ResponseEntity<BookResponse> create(@RequestBody BookRequest request) {
+        return ResponseEntity.ok(bookService.create(request));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Book> update(@PathVariable Long id, @RequestBody Book book) {
-        return ResponseEntity.ok(bookService.update(id, book));
+    public ResponseEntity<BookResponse> update(
+            @PathVariable Long id,
+            @RequestBody BookRequest request
+    ) {
+        return ResponseEntity.ok(bookService.update(id, request));
     }
 
     @DeleteMapping("/{id}")
@@ -32,12 +37,13 @@ public class BookController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Book> getById(@PathVariable Long id) {
+    public ResponseEntity<BookResponse> getById(@PathVariable Long id) {
         return ResponseEntity.ok(bookService.getById(id));
     }
 
     @GetMapping
-    public ResponseEntity<List<Book>> getAll() {
+    public ResponseEntity<List<BookResponse>> getAll() {
         return ResponseEntity.ok(bookService.getAll());
     }
 }
+
