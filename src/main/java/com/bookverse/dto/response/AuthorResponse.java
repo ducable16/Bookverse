@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 
 @Data
 @Builder
+@AllArgsConstructor
 public class AuthorResponse {
     private Long id;
     private String name;

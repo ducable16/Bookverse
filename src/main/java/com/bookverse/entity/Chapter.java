@@ -15,8 +15,8 @@ public class Chapter extends BaseEntity {
 
     private String title;
 
-    @Column(columnDefinition = "LONGTEXT")
-    private String content; // HTML hoặc Markdown
+    @Column(columnDefinition = "TEXT")
+    private String content;
 
     @ManyToOne
     @JoinColumn(name = "book_id")
