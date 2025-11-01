@@ -1,5 +1,6 @@
 package com.bookverse.dto.response;
 
+import com.bookverse.enums.ErrorCode;
 import com.bookverse.utils.ResponseCode;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -8,6 +9,7 @@ import lombok.Data;
 @AllArgsConstructor
 public class ApiResponse<T> {
     private int code = ResponseCode.SUCCESS;
+    private String message;
     private T data;
 
     public ApiResponse() {
@@ -22,6 +24,11 @@ public class ApiResponse<T> {
         this.code = code;
     }
 
+    public ApiResponse(int code, String message) {
+        this.code = code;
+        this.message = message;
+    }
+
     public static <T> ApiResponse<T> success(T data) {
         return new ApiResponse<>(data);
     }
@@ -32,5 +39,9 @@ public class ApiResponse<T> {
 
     public static <T> ApiResponse<T> error(int code) {
         return new ApiResponse<>(code);
+    }
+
+    public static <T> ApiResponse<T> error(ErrorCode code, String message) {
+        return new ApiResponse<>(code.getHttpStatus(), message);
     }
 }

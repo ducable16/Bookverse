@@ -32,7 +32,7 @@ public class Book extends BaseEntity {
 
     @ManyToMany
     @JoinTable(
-            name = "book_category",
+            name = "categories",
             joinColumns = @JoinColumn(name = "book_id"),
             inverseJoinColumns = @JoinColumn(name = "category_id")
     )
