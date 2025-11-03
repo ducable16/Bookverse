@@ -12,6 +12,7 @@ import com.bookverse.service.BookService;
 import com.bookverse.utils.BookMapper;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -113,5 +114,35 @@ public class BookServiceImpl implements BookService {
         return title.toLowerCase()
                 .replaceAll("[^a-z0-9]+", "-")
                 .replaceAll("^-|-$", "");
+    }
+
+    @Override
+    public List<BookResponse> getByAuthor(Long authorId, Pageable pageable) {
+        return bookRepository.findByAuthorId(authorId, pageable)
+                .stream()
+                .map(BookMapper::toResponse)
+                .toList();
+    }
+
+    @Override
+    public List<BookResponse> getByCategory(Long categoryId) {
+        return bookRepository.findByCategoriesId(categoryId)
+                .stream()
+                .map(BookMapper::toResponse)
+                .toList();
+    }
+
+    @Override
+    public List<BookResponse> searchByTitle(String keyword) {
+        return bookRepository.findByTitleContainingIgnoreCase(keyword)
+                .stream()
+                .map(BookMapper::toResponse)
+                .toList();
+    }
+
+    @Override
+    public BookResponse getBySlug(String slug) {
+        Book book = bookRepository.findBySlug(slug).orElseThrow(() -> new EntityNotFoundException("Book not found"));
+        return BookMapper.toResponse(book);
     }
 }
