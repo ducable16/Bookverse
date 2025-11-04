@@ -3,11 +3,14 @@ package com.bookverse.dto.response;
 import com.bookverse.enums.ErrorCode;
 import com.bookverse.utils.ResponseCode;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 
 @Data
 @AllArgsConstructor
+@Builder
 public class ApiResponse<T> {
+
     private int code = ResponseCode.SUCCESS;
     private String message;
     private T data;
@@ -29,19 +32,44 @@ public class ApiResponse<T> {
         this.message = message;
     }
 
-    public static <T> ApiResponse<T> success(T data) {
-        return new ApiResponse<>(data);
+    public static <T> ApiResponse<T> success(T result) {
+        return ApiResponse.<T>builder()
+                .code(ResponseCode.SUCCESS)
+                .message("Success")
+                .data(result)
+                .build();
     }
 
-    public static <T> ApiResponse<T> defaultResponse() {
-        return new ApiResponse<>();
+    public static <T> ApiResponse<T> success() {
+        return ApiResponse.<T>builder()
+                .code(ResponseCode.SUCCESS)
+                .message("Success")
+                .build();
     }
 
-    public static <T> ApiResponse<T> error(int code) {
-        return new ApiResponse<>(code);
+    public static <T> ApiResponse<T> error(ErrorCode errorCode) {
+        return ApiResponse.<T>builder()
+                .code(errorCode.getCode())
+                .message(errorCode.getMessage())
+                .build();
     }
 
-    public static <T> ApiResponse<T> error(ErrorCode code, String message) {
-        return new ApiResponse<>(code.getHttpStatus(), message);
+    public static <T> ApiResponse<T> error(ErrorCode errorCode, String customMessage) {
+        return ApiResponse.<T>builder()
+                .code(errorCode.getCode())
+                .message(customMessage)
+                .build();
     }
+
+//    public static <T> ApiResponse<T> defaultResponse() {
+//        return new ApiResponse<>();
+//    }
+//
+//    public static <T> ApiResponse<T> error(int code) {
+//        return new ApiResponse<>(code);
+//    }
+//
+//    public static <T> ApiResponse<T> error(ErrorCode code, String message) {
+//        return new ApiResponse<>(code.getHttpStatus(), message);
+//    }
 }

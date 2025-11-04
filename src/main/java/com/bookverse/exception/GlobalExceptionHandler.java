@@ -2,66 +2,46 @@ package com.bookverse.exception;
 
 import com.bookverse.enums.ErrorCode;
 import com.bookverse.dto.response.ApiResponse;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-
-import java.lang.IllegalArgumentException;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(BaseException.class)
-    public ResponseEntity<ApiResponse<Object>> handleBaseException(BaseException ex) {
+    @ExceptionHandler(AppException.class)
+    public ResponseEntity<ApiResponse<Object>> handleBaseException(AppException ex) {
         return ResponseEntity
                 .status(ex.getHttpStatus())
                 .body(ApiResponse.error(ex.getErrorCode(), ex.getMessage()));
     }
 
-    @ExceptionHandler(BadRequestException.class)
-    public ResponseEntity<ApiResponse<Object>> handleBadRequest(BadRequestException ex) {
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ApiResponse<Object>> handleValidation(MethodArgumentNotValidException ex) {
+        String detailedMessage = ex.getFieldError() != null
+                ? ex.getFieldError().getDefaultMessage()
+                : ErrorCode.INVALID_INPUT.getMessage();
         return ResponseEntity
                 .badRequest()
-                .body(ApiResponse.error(ErrorCode.BAD_REQUEST, ex.getMessage()));
+                .body(ApiResponse.error(ErrorCode.INVALID_INPUT, detailedMessage));
     }
 
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<ApiResponse<Object>> handleGeneric(Exception ex) {
-        ex.printStackTrace();
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<ApiResponse<Object>> handleJsonMappingException(HttpMessageNotReadableException ex) {
         return ResponseEntity
-                .status(500)
-                .body(ApiResponse.error(ErrorCode.INTERNAL_ERROR, "Internal server error"));
+                .badRequest()
+                .body(ApiResponse.error(ErrorCode.INVALID_FORMAT));
     }
 
-    @ExceptionHandler(EntityNotFoundException.class)
-    public ResponseEntity<ApiResponse<Object>> handleEntityNotFound(EntityNotFoundException ex) {
+    @ExceptionHandler(NoResourceFoundException.class)
+    public ResponseEntity<ApiResponse<Object>> handleResourceNotFound(NoResourceFoundException ex) {
         return ResponseEntity
-                .status(ex.getHttpStatus())
-                .body(ApiResponse.error(ErrorCode.ENTITY_NOT_FOUND, ex.getMessage()));
-    }
-    @ExceptionHandler(java.lang.IllegalArgumentException.class)
-    public ResponseEntity<ApiResponse<Object>> handleIllegalArgument(IllegalArgumentException ex) {
-        return ResponseEntity
-                .status(400)
-                .body(ApiResponse.error(ErrorCode.INTERNAL_ERROR, ex.getMessage()));
-    }
-    @ExceptionHandler(AccessDeniedException.class)
-    public ResponseEntity<ApiResponse<Object>> handleAccessDenied(AccessDeniedException ex) {
-        return ResponseEntity
-                .status(ex.getHttpStatus())
-                .body(ApiResponse.error(ErrorCode.ACCESS_DENIED, ex.getMessage()));
-    }
-    @ExceptionHandler(org.springframework.security.access.AccessDeniedException.class)
-    public ResponseEntity<ApiResponse<Object>> handleOriginAccessDenied(org.springframework.security.access.AccessDeniedException ex) {
-        return ResponseEntity
-                .status(403)
-                .body(ApiResponse.error(ErrorCode.ACCESS_DENIED, ex.getMessage()));
-    }
-    @ExceptionHandler(UnauthorizedException.class)
-    public ResponseEntity<ApiResponse<Object>> handleUnauthorized(UnauthorizedException ex) {
-        return ResponseEntity
-                .status(401)
-                .body(ApiResponse.error(ex.getErrorCode(), ex.getMessage()));
+                .status(HttpStatus.NOT_FOUND)
+                .body(ApiResponse.error(ErrorCode.URL_NOT_FOUND, "Đường dẫn không tồn tại: " + ex.getResourcePath()));
     }
 
 }
