@@ -5,12 +5,14 @@ import com.bookverse.dto.response.BookResponse;
 import com.bookverse.entity.Author;
 import com.bookverse.entity.Book;
 import com.bookverse.entity.Category;
+import com.bookverse.enums.ErrorCode;
+import com.bookverse.exception.AppException;
+import com.bookverse.exception.EntityNotFoundException;
 import com.bookverse.repository.AuthorRepository;
 import com.bookverse.repository.BookRepository;
 import com.bookverse.repository.CategoryRepository;
 import com.bookverse.service.BookService;
 import com.bookverse.utils.BookMapper;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -32,11 +34,12 @@ public class BookServiceImpl implements BookService {
 
         String slug = generateSlug(request.getTitle());
         if (bookRepository.existsBySlug(slug)) {
-            throw new IllegalArgumentException("Slug already exists: " + slug);
+            throw new AppException(ErrorCode.SLUG_ALREADY_EXISTS) {
+            };
         }
 
         Author author = authorRepository.findById(request.getAuthorId())
-                .orElseThrow(() -> new EntityNotFoundException("Author not found"));
+                .orElseThrow(() -> new EntityNotFoundException(ErrorCode.AUTHOR_NOT_FOUND));
 
         List<Category> categories = categoryRepository.findAllById(request.getCategoryIds());
 
@@ -58,15 +61,16 @@ public class BookServiceImpl implements BookService {
     public BookResponse update(Long id, BookRequest request) {
 
         Book book = bookRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Book not found"));
+                .orElseThrow(() -> new EntityNotFoundException(ErrorCode.BOOK_NOT_FOUND));
 
         String slug = generateSlug(request.getTitle());
         if (bookRepository.existsBySlugAndIdNot(slug, id)) {
-            throw new IllegalArgumentException("Slug already exists: " + slug);
+            throw new AppException(ErrorCode.SLUG_ALREADY_EXISTS) {
+            };
         }
 
         Author author = authorRepository.findById(request.getAuthorId())
-                .orElseThrow(() -> new EntityNotFoundException("Author not found"));
+                .orElseThrow(() -> new EntityNotFoundException(ErrorCode.AUTHOR_NOT_FOUND));
 
         List<Category> categories = categoryRepository.findAllById(request.getCategoryIds());
 
@@ -83,7 +87,7 @@ public class BookServiceImpl implements BookService {
     @Override
     public void delete(Long id) {
         Book book = bookRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Book not found"));
+                .orElseThrow(() -> new EntityNotFoundException(ErrorCode.BOOK_NOT_FOUND));
 
         // Soft delete
         book.setIsDeleted(true);
@@ -97,7 +101,7 @@ public class BookServiceImpl implements BookService {
     public BookResponse getById(Long id) {
         return BookMapper.toResponse(
                 bookRepository.findById(id)
-                        .orElseThrow(() -> new EntityNotFoundException("Book not found"))
+                        .orElseThrow(() -> new EntityNotFoundException(ErrorCode.BOOK_NOT_FOUND))
         );
     }
 
@@ -142,7 +146,7 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public BookResponse getBySlug(String slug) {
-        Book book = bookRepository.findBySlug(slug).orElseThrow(() -> new EntityNotFoundException("Book not found"));
+        Book book = bookRepository.findBySlug(slug).orElseThrow(() -> new EntityNotFoundException(ErrorCode.BOOK_NOT_FOUND));
         return BookMapper.toResponse(book);
     }
 }

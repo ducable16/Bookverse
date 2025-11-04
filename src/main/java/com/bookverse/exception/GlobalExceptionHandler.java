@@ -41,7 +41,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse<Object>> handleResourceNotFound(NoResourceFoundException ex) {
         return ResponseEntity
                 .status(HttpStatus.NOT_FOUND)
-                .body(ApiResponse.error(ErrorCode.URL_NOT_FOUND, "Đường dẫn không tồn tại: " + ex.getResourcePath()));
+                .body(ApiResponse.error(ErrorCode.URL_NOT_FOUND, "Invalid URL: " + ex.getResourcePath()));
     }
 
 }
