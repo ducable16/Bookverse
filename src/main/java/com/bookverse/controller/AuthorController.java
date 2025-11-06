@@ -17,29 +17,28 @@ public class AuthorController {
     private final AuthorService authorService;
 
     @PostMapping("/create")
-    public ResponseEntity<AuthorResponse> create(@RequestBody AuthorRequest request) {
-        return ResponseEntity.ok(authorService.create(request));
+    public AuthorResponse create(@RequestBody AuthorRequest request) {
+        return authorService.create(request);
     }
 
     @PostMapping("/update/{id}")
-    public ResponseEntity<AuthorResponse> update(@PathVariable Long id, @RequestBody AuthorRequest request) {
-        return ResponseEntity.ok(authorService.update(id, request));
+    public AuthorResponse update(@PathVariable Long id, @RequestBody AuthorRequest request) {
+        return authorService.update(id, request);
     }
 
     @PostMapping("/delete/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
+    public void delete(@PathVariable Long id) {
         authorService.delete(id);
-        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/detail/{id}")
-    public ResponseEntity<AuthorResponse> getById(@PathVariable Long id) {
-        return ResponseEntity.ok(authorService.getById(id));
+    public AuthorResponse getById(@PathVariable Long id) {
+        return authorService.getById(id);
     }
 
     @GetMapping("/list")
-    public ResponseEntity<List<AuthorResponse>> getAll() {
-        return ResponseEntity.ok(authorService.getAll());
+    public List<AuthorResponse> getAll() {
+        return authorService.getAll();
     }
 }
 

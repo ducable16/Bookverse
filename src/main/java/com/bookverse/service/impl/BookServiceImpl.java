@@ -13,6 +13,7 @@ import com.bookverse.repository.BookRepository;
 import com.bookverse.repository.CategoryRepository;
 import com.bookverse.service.BookService;
 import com.bookverse.utils.BookMapper;
+import com.bookverse.utils.SlugUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -32,7 +33,7 @@ public class BookServiceImpl implements BookService {
     @Override
     public BookResponse create(BookRequest request) {
 
-        String slug = generateSlug(request.getTitle());
+        String slug = SlugUtil.toSlug(request.getTitle());
         if (bookRepository.existsBySlug(slug)) {
             throw new AppException(ErrorCode.SLUG_ALREADY_EXISTS) {
             };
@@ -63,7 +64,7 @@ public class BookServiceImpl implements BookService {
         Book book = bookRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(ErrorCode.BOOK_NOT_FOUND));
 
-        String slug = generateSlug(request.getTitle());
+        String slug = SlugUtil.toSlug(request.getTitle());
         if (bookRepository.existsBySlugAndIdNot(slug, id)) {
             throw new AppException(ErrorCode.SLUG_ALREADY_EXISTS) {
             };
@@ -112,12 +113,6 @@ public class BookServiceImpl implements BookService {
                 .stream()
                 .map(BookMapper::toResponse)
                 .toList();
-    }
-
-    private String generateSlug(String title) {
-        return title.toLowerCase()
-                .replaceAll("[^a-z0-9]+", "-")
-                .replaceAll("^-|-$", "");
     }
 
     @Override

@@ -8,6 +8,7 @@ import com.bookverse.exception.AppException;
 import com.bookverse.exception.EntityNotFoundException;
 import com.bookverse.repository.CategoryRepository;
 import com.bookverse.service.CategoryService;
+import com.bookverse.utils.SlugUtil;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -24,7 +25,6 @@ public class CategoryServiceImpl implements CategoryService {
     public static Category toEntity(CategoryRequest request) {
         Category category = new Category();
         category.setName(request.getName());
-        category.setSlug(request.getSlug());
         return category;
     }
 
@@ -39,12 +39,15 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public CategoryResponse create(CategoryRequest request) {
 
-        if (categoryRepository.existsBySlug(request.getSlug())) {
+        String slug = SlugUtil.toSlug(request.getName());
+
+        if (categoryRepository.existsBySlug(slug)) {
             throw new AppException(ErrorCode.CATEGORY_ALREADY_EXISTS) {
             };
         }
 
         Category category = toEntity(request);
+        category.setSlug(slug);
         return toResponse(categoryRepository.save(category));
     }
 
@@ -55,7 +58,8 @@ public class CategoryServiceImpl implements CategoryService {
                 .orElseThrow(() -> new EntityNotFoundException(ErrorCode.CATEGORY_NOT_FOUND));
 
         category.setName(request.getName());
-        category.setSlug(request.getSlug());
+        String slug = SlugUtil.toSlug(request.getName());
+        category.setSlug(slug);
 
         return toResponse(categoryRepository.save(category));
     }
