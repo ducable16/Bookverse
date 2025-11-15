@@ -5,11 +5,9 @@ import com.bookverse.enums.ErrorCode;
 import com.bookverse.exception.EntityNotFoundException;
 import com.bookverse.repository.UserRepository;
 import lombok.AllArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.stream.Collectors;
@@ -23,7 +21,7 @@ public class CustomUserDetailsService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) {
         User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new EntityNotFoundException(ErrorCode.USER_NOT_EXISTED));
+                .orElseThrow(() -> new EntityNotFoundException(ErrorCode.USER_NOT_FOUND));
 
 
         var authorities = user.getRoles().stream()

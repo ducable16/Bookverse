@@ -23,10 +23,10 @@ public class BaseEntity implements Serializable {
     @Column(name = "id")
     private Long id;
 
-    @Column(columnDefinition = "Boolean default true")
+    @Column(nullable = false)
     private Boolean isActive = true;
 
-    @Column(columnDefinition = "Boolean default false")
+    @Column(nullable = false)
     private Boolean isDeleted = false;
 
     @Column(updatable = false, name = "created_user")

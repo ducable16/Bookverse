@@ -48,7 +48,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserResponse getUser(Long id) {
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
         return mapToResponse(user);
     }
 }

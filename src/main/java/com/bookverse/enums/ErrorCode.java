@@ -20,7 +20,7 @@ public enum ErrorCode {
     USERNAME_ALREADY_EXISTS(1004, "Username already exists", HttpStatus.CONFLICT),
     PASSWORD_INVALID(1005, "Password must be at least 8 characters", HttpStatus.BAD_REQUEST),
     WRONG_PASSWORD(1006, "Incorrect password", HttpStatus.BAD_REQUEST),
-    USER_NOT_EXISTED(1007, "User not found", HttpStatus.NOT_FOUND),
+    USER_NOT_FOUND(1007, "User not found", HttpStatus.NOT_FOUND),
     UNAUTHENTICATED(1008, "Unauthenticated", HttpStatus.UNAUTHORIZED),
     UNAUTHORIZED(1009, "You do not have permission", HttpStatus.FORBIDDEN),
     INVALID_OTP(1010, "Invalid or expired OTP", HttpStatus.BAD_REQUEST),
@@ -35,6 +35,8 @@ public enum ErrorCode {
     BOOK_ALREADY_EXISTS(2011, "Book already exists", HttpStatus.CONFLICT),
     CATEGORY_ALREADY_EXISTS(2012, "Category already exists", HttpStatus.CONFLICT),
     SLUG_ALREADY_EXISTS(2013, "Slug already exists", HttpStatus.CONFLICT),
+    COMMENT_NOT_FOUND(2014, "Comment not found", HttpStatus.NOT_FOUND),
+    PARENT_COMMENT_NOT_FOUND(2015, "Parent comment not found", HttpStatus.NOT_FOUND),
 
     ;
 
