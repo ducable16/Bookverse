@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatusCode;
 @Getter
 public enum ErrorCode {
 
+    SUCCESS(200, "Success", HttpStatus.OK),
     INTERNAL_SERVER_ERROR(500, "Internal Server Error", HttpStatus.INTERNAL_SERVER_ERROR),
 
     // --- 9xxx: System & Defaults ---

@@ -8,4 +8,6 @@ public interface UserService {
     UserResponse register(UserRegisterRequest request);
 
     UserResponse getUser(Long id);
+
+    Long getUserId(String token);
 }

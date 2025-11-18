@@ -9,6 +9,7 @@ public class ParamKey {
     public static final String CREATED_AT = "created_at";
 
     public static final String DATA = "data";
+    public static final String MESSAGE = "message";
 
     public static final String EMAIL = "email";
 

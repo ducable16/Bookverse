@@ -33,12 +33,12 @@ public class JwtTokenProvider {
         return Jwts.builder()
                 .subject(userPrincipal.getUsername())
                 .issuedAt(new Date())
-                .expiration(    expiryDate)
+                .expiration(expiryDate)
                 .signWith(key)
                 .compact();
     }
 
-    public String getUsernameFromJWT(String token) {
+    public String extractUsername(String token) {
         SecretKey key = Keys.hmacShaKeyFor(jwtSecret.getBytes(StandardCharsets.UTF_8));
 
         Claims claims = Jwts.parser()

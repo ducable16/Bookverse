@@ -5,8 +5,10 @@ import com.bookverse.dto.response.UserResponse;
 import com.bookverse.entity.User;
 import com.bookverse.enums.ErrorCode;
 import com.bookverse.exception.AppException;
+import com.bookverse.exception.EntityNotFoundException;
 import com.bookverse.repository.UserRepository;
 import com.bookverse.service.UserService;
+import com.bookverse.utils.JwtTokenProvider;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -18,6 +20,7 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final JwtTokenProvider jwtTokenProvider;
 
     private UserResponse mapToResponse(User user) {
         return UserResponse.builder()
@@ -25,6 +28,13 @@ public class UserServiceImpl implements UserService {
                 .username(user.getUsername())
                 .email(user.getEmail())
                 .build();
+    }
+
+    @Override
+    public Long getUserId(String token) {
+        String email = jwtTokenProvider.extractUsername(token);
+        User user = userRepository.findByEmail(email.toLowerCase()).orElseThrow(() -> new EntityNotFoundException(ErrorCode.USER_NOT_FOUND));
+        return user.getId();
     }
 
     @Transactional
