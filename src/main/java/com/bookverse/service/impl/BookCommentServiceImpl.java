@@ -7,6 +7,7 @@ import com.bookverse.entity.BookComment;
 import com.bookverse.entity.User;
 import com.bookverse.enums.ErrorCode;
 import com.bookverse.exception.AppException;
+import com.bookverse.exception.EntityNotFoundException;
 import com.bookverse.repository.BookCommentRepository;
 import com.bookverse.repository.BookRepository;
 import com.bookverse.repository.UserRepository;
@@ -113,7 +114,7 @@ public class BookCommentServiceImpl implements BookCommentService {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String username = auth.getName();
         return userRepository.findByUsername(username)
-                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+                .orElseThrow(() -> new EntityNotFoundException(ErrorCode.USER_NOT_FOUND));
     }
 }
 
