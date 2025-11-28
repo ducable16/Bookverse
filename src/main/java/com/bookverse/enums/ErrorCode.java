@@ -11,6 +11,7 @@ public enum ErrorCode {
     INTERNAL_SERVER_ERROR(500, "Internal Server Error", HttpStatus.INTERNAL_SERVER_ERROR),
 
     // --- 9xxx: System & Defaults ---
+    UPLOAD_FAILED(9997, "Upload failed", HttpStatus.INTERNAL_SERVER_ERROR),
     URL_NOT_FOUND(9998, "URL not found", HttpStatus.INTERNAL_SERVER_ERROR),
     UNCATEGORIZED_EXCEPTION(9999, "Uncategorized error", HttpStatus.INTERNAL_SERVER_ERROR),
     INVALID_KEY(1001, "Invalid error key", HttpStatus.BAD_REQUEST),
@@ -27,6 +28,8 @@ public enum ErrorCode {
     INVALID_OTP(1010, "Invalid or expired OTP", HttpStatus.BAD_REQUEST),
     INVALID_INPUT(1011, "Invalid input", HttpStatus.BAD_REQUEST),
     INVALID_FORMAT(1012, "Invalid JSON format", HttpStatus.BAD_REQUEST),
+    OTP_INCORRECT(1013, "OTP incorrect", HttpStatus.BAD_REQUEST),
+    OTP_EXPIRED(1013, "OTP expired", HttpStatus.BAD_REQUEST),
 
     // --- 2xxx: Book/Domain ---
     BOOK_NOT_FOUND(2001, "Book not found", HttpStatus.NOT_FOUND),

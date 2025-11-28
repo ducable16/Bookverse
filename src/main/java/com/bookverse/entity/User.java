@@ -19,6 +19,8 @@ public class User extends BaseEntity {
     @Column(unique = true)
     private String username;
 
+    private String fullName;
+
     @Column(unique = true)
     private String email;
 
@@ -27,14 +29,9 @@ public class User extends BaseEntity {
     private String avatarUrl;
 
     @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(
-            name = "user_roles",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "role_name")
-    )
+    @JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_name"))
     private Set<Role> roles = new HashSet<>();
 
     @OneToMany(mappedBy = "user")
     private List<ReadingHistory> histories = new ArrayList<>();
 }
-

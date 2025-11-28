@@ -1,13 +1,24 @@
 package com.bookverse.service;
 
 import com.bookverse.dto.request.LoginRequest;
+import com.bookverse.dto.request.UserRegisterRequest;
 import com.bookverse.dto.response.LoginResponse;
-import com.bookverse.utils.JwtTokenProvider;
+import com.bookverse.dto.response.UserResponse;
+import com.bookverse.dto.user.UserDto;
+import com.bookverse.entity.User;
+import com.bookverse.enums.ErrorCode;
+import com.bookverse.exception.AppException;
+import com.bookverse.repository.UserRepository;
+import com.bookverse.service.impl.UserServiceImpl;
+import com.bookverse.utils.CustomUserDetails;
+import com.bookverse.utils.JwtService;
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -15,24 +26,50 @@ import org.springframework.stereotype.Service;
 public class AuthService {
 
     private final AuthenticationManager authenticationManager;
-    private final JwtTokenProvider tokenProvider;
+    private final JwtService jwtService;
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public LoginResponse authenticateUser(LoginRequest loginRequest) {
-
+    public LoginResponse login(LoginRequest loginRequest) {
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
-                        loginRequest.getUsername(),
+                        loginRequest.getEmail(),
                         loginRequest.getPassword()
                 )
         );
-
+        System.out.println("authentication : " + authentication);
         SecurityContextHolder.getContext().setAuthentication(authentication);
-
-        String jwt = tokenProvider.generateToken(authentication);
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        User user = userDetails.getUser();
+        UserDto dto = UserDto.builder()
+                .userId(user.getId())
+                .email(user.getEmail())
+                .username(user.getUsername())
+                .build();
+        String jwt = jwtService.generateToken(dto);
 
         return LoginResponse.builder()
                 .token(jwt)
-                .username(loginRequest.getUsername())
+                .email(user.getEmail())
+                .username(user.getUsername())
+                .fullName(user.getFullName())
                 .build();
+    }
+
+    @Transactional
+    public UserResponse register(UserRegisterRequest request) {
+        if (userRepository.existsByUsername(request.getUsername())) {
+            throw new AppException(ErrorCode.USERNAME_ALREADY_EXISTS);
+        }
+
+        User user = new User();
+        user.setUsername(request.getUsername());
+        user.setEmail(request.getEmail());
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
+        user.setIsActive(true);
+
+        User savedUser = userRepository.save(user);
+
+        return UserServiceImpl.mapToResponse(savedUser);
     }
 }

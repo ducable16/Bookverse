@@ -2,14 +2,17 @@ package com.bookverse.utils;
 
 import com.bookverse.entity.User;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @AllArgsConstructor
+@Builder
 public class CustomUserDetails implements UserDetails {
     private User user;
 
@@ -26,9 +29,12 @@ public class CustomUserDetails implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        // Chuyển Role từ Entity của bạn sang GrantedAuthority của Spring
         return user.getRoles().stream()
-                .map(role -> new SimpleGrantedAuthority(role.getName()))
-                .collect(Collectors.toList());
+                .map(role -> new SimpleGrantedAuthority("ROLE_" + role.getName()))
+                .collect(Collectors.toSet());
+    }
+
+    public User getUser() {
+        return user;
     }
 }
