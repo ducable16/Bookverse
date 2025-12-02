@@ -3,6 +3,7 @@ package com.bookverse.controller;
 import com.bookverse.enums.ErrorCode;
 import com.bookverse.service.FileService;
 import com.bookverse.service.UploadService;
+import com.bookverse.service.UserService;
 import com.bookverse.utils.ParamKey;
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
@@ -24,15 +25,15 @@ public class UploadController {
     private final FileService fileService;
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<?> upload(
-            @RequestHeader(value = "Authorization", required = false) String token,
+    public Object upload(
+//            @RequestHeader(value = "Authorization", required = false) String token,
             @RequestPart("file") MultipartFile file
     ) {
 
-        if (token == null || token.isBlank()) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(error(ErrorCode.UNAUTHORIZED));
-        }
+//        if (token == null || token.isBlank()) {
+//            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+//                    .body(error(ErrorCode.UNAUTHORIZED));
+//        }
 
         if (file == null || file.isEmpty()) {
             return ResponseEntity.badRequest()
@@ -44,12 +45,12 @@ public class UploadController {
         String assetId = fileDetail.get(ParamKey.ASSET_ID).toString();
         String url = fileDetail.get(ParamKey.URL).toString();
 
-        fileService.saveFile(assetId, url, token);
+        fileService.saveFile(assetId, url);
 
         JSONObject result = new JSONObject();
         result.put(ParamKey.URL, url);
 
-        return ResponseEntity.ok(success(result));
+        return result;
     }
 
     private JSONObject success(Object data) {

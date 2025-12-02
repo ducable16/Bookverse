@@ -30,8 +30,25 @@ public class UserServiceImpl implements UserService {
                 .username(user.getUsername())
                 .fullName(user.getFullName())
                 .email(user.getEmail())
+                .avatarUrl(user.getAvatarUrl())
+                .role(user.getRole())
                 .build();
     }
+
+    @Override
+    public Long getUserId() {
+        var auth = SecurityContextHolder.getContext().getAuthentication();
+
+        if (auth != null && auth.isAuthenticated() && auth.getPrincipal() instanceof CustomUserDetails) {
+            CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
+            User usr = userDetails.getUser();
+            return usr.getId();
+        }
+        else {
+            throw new AppException(ErrorCode.UNAUTHORIZED);
+        }
+    }
+
     @Override
     public User getCurrentUser() {
         var auth = SecurityContextHolder.getContext().getAuthentication();

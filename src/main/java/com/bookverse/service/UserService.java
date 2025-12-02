@@ -11,6 +11,8 @@ public interface UserService {
 
     Long getUserId(String token);
 
+    Long getUserId();
+
     User getCurrentUser();
 
     UserResponse updateUser(Long id, UserUpdateRequest request);

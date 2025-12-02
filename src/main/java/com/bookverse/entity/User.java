@@ -1,14 +1,13 @@
 package com.bookverse.entity;
 
 import com.bookverse.entity.base.BaseEntity;
+import com.bookverse.enums.Role;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @Getter
 @Setter
@@ -28,9 +27,9 @@ public class User extends BaseEntity {
 
     private String avatarUrl;
 
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_name"))
-    private Set<Role> roles = new HashSet<>();
+    @Enumerated(EnumType.STRING)
+    @Column(name = "role")
+    private Role role;
 
     @OneToMany(mappedBy = "user")
     private List<ReadingHistory> histories = new ArrayList<>();

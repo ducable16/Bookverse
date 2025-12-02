@@ -1,5 +1,6 @@
 package com.bookverse.dto.response;
 
+import com.bookverse.enums.Role;
 import lombok.Builder;
 import lombok.Data;
 
@@ -11,4 +12,5 @@ public class UserResponse {
     private String fullName;
     private String email;
     private String avatarUrl;
+    private Role role;
 }

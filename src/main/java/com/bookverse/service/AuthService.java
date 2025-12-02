@@ -7,6 +7,7 @@ import com.bookverse.dto.response.UserResponse;
 import com.bookverse.dto.user.UserDto;
 import com.bookverse.entity.User;
 import com.bookverse.enums.ErrorCode;
+import com.bookverse.enums.Role;
 import com.bookverse.exception.AppException;
 import com.bookverse.repository.UserRepository;
 import com.bookverse.service.impl.UserServiceImpl;
@@ -53,6 +54,7 @@ public class AuthService {
                 .email(user.getEmail())
                 .username(user.getUsername())
                 .fullName(user.getFullName())
+                .role(user.getRole())
                 .build();
     }
 
@@ -67,6 +69,7 @@ public class AuthService {
         user.setEmail(request.getEmail());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setIsActive(true);
+        user.setRole(Role.USER);  // Gán role mặc định là USER
 
         User savedUser = userRepository.save(user);
 
