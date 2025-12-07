@@ -1,6 +1,7 @@
 package com.bookverse.controller;
 
 import com.bookverse.enums.ErrorCode;
+import com.bookverse.exception.AppException;
 import com.bookverse.service.FileService;
 import com.bookverse.service.UploadService;
 import com.bookverse.service.UserService;
@@ -17,7 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/upload")
+@RequestMapping("/api/upload")
 @AllArgsConstructor
 public class UploadController {
 
@@ -26,21 +27,15 @@ public class UploadController {
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public Object upload(
-//            @RequestHeader(value = "Authorization", required = false) String token,
             @RequestPart("file") MultipartFile file
     ) {
 
-//        if (token == null || token.isBlank()) {
-//            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-//                    .body(error(ErrorCode.UNAUTHORIZED));
-//        }
-
         if (file == null || file.isEmpty()) {
-            return ResponseEntity.badRequest()
-                    .body(error(ErrorCode.INVALID_INPUT));
+            throw new AppException(ErrorCode.INVALID_INPUT);
         }
 
         Map<String, Object> fileDetail = uploadService.uploadToCloudinary(file);
+        System.out.println("Cloudinary upload result: {}" + fileDetail);
 
         String assetId = fileDetail.get(ParamKey.ASSET_ID).toString();
         String url = fileDetail.get(ParamKey.URL).toString();
@@ -51,22 +46,6 @@ public class UploadController {
         result.put(ParamKey.URL, url);
 
         return result;
-    }
-
-    private JSONObject success(Object data) {
-        JSONObject obj = new JSONObject();
-        obj.put(ParamKey.CODE, ErrorCode.SUCCESS);
-        obj.put(ParamKey.MESSAGE, ErrorCode.SUCCESS.getMessage());
-        obj.put(ParamKey.DATA, data);
-        return obj;
-    }
-
-    private JSONObject error(ErrorCode errorCode) {
-        JSONObject obj = new JSONObject();
-        obj.put(ParamKey.CODE, errorCode);
-        obj.put(ParamKey.MESSAGE, errorCode.getMessage());
-        obj.put(ParamKey.DATA, JSONObject.NULL);
-        return obj;
     }
 }
 
