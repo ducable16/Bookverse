@@ -23,29 +23,16 @@ import java.util.Map;
 public class UploadController {
 
     private final UploadService uploadService;
-    private final FileService fileService;
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public Object upload(
+    public Map<String, String> upload(
             @RequestPart("file") MultipartFile file
     ) {
 
         if (file == null || file.isEmpty()) {
             throw new AppException(ErrorCode.INVALID_INPUT);
         }
-
-        Map<String, Object> fileDetail = uploadService.uploadToCloudinary(file);
-        System.out.println("Cloudinary upload result: {}" + fileDetail);
-
-        String assetId = fileDetail.get(ParamKey.ASSET_ID).toString();
-        String url = fileDetail.get(ParamKey.URL).toString();
-
-        fileService.saveFile(assetId, url);
-
-        JSONObject result = new JSONObject();
-        result.put(ParamKey.URL, url);
-
-        return result;
+        return uploadService.uploadImage(file);
     }
 }
 

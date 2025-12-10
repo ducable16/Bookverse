@@ -2,15 +2,18 @@ package com.bookverse.service;
 
 import com.bookverse.enums.ErrorCode;
 import com.bookverse.exception.AppException;
+import com.bookverse.utils.ParamKey;
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.json.JSONObject;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.security.MessageDigest;
+import java.util.HashMap;
 import java.util.Map;
 
 
@@ -21,6 +24,7 @@ import java.util.Map;
 public class UploadService {
 
     private final Cloudinary cloudinary;
+    private final FileService fileService;
 
     public Map<String, Object> uploadToCloudinary(MultipartFile file) {
 
@@ -38,20 +42,19 @@ public class UploadService {
         }
     }
 
-    public static String sign(long timestamp, String apiSecret) {
-        try {
-            String data = "timestamp=" + timestamp + apiSecret;
-            MessageDigest md = MessageDigest.getInstance("SHA-1");
-            byte[] bytes = md.digest(data.getBytes());
+    public Map<String, String> uploadImage(MultipartFile file) {
+        Map<String, Object> fileDetail = uploadToCloudinary(file);
+        System.out.println("Cloudinary upload result: {}" + fileDetail);
 
-            StringBuilder sb = new StringBuilder();
-            for (byte b : bytes) {
-                sb.append(String.format("%02x", b));
-            }
-            return sb.toString();
+        String assetId = fileDetail.get(ParamKey.ASSET_ID).toString();
+        String url = fileDetail.get(ParamKey.URL).toString();
+        System.out.println("Uploaded file URL: {}" + url);
+        System.out.println("Uploaded file assetID: {}" + assetId);
 
-        } catch (Exception e) {
-            throw new RuntimeException("Error generating Cloudinary signature", e);
-        }
+        fileService.saveFile(assetId, url);
+
+        Map<String, String> result = new HashMap<>();
+        result.put(ParamKey.URL, url);
+        return result;
     }
 }
