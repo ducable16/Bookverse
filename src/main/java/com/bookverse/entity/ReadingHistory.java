@@ -10,19 +10,24 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @Entity
-@Table(name = "reading_history")
+@Table(
+        name = "reading_history",
+        uniqueConstraints = {
+                @UniqueConstraint(columnNames = {"user_id", "book_id"})
+        }
+)
 public class ReadingHistory extends BaseEntity {
 
-    @ManyToOne
-    @JoinColumn(name = "user_id")
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @ManyToOne
-    @JoinColumn(name = "book_id")
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "book_id", nullable = false)
     private Book book;
 
+    @Column(nullable = false)
     private Integer lastReadChapter;
 
-    private LocalDateTime lastReadTime;
 }
 

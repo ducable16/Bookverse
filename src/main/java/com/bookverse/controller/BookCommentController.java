@@ -32,7 +32,7 @@ public class BookCommentController {
         return commentService.getCommentsByBook(bookId);
     }
 
-    @PutMapping("/{commentId}")
+    @PostMapping("/update/{commentId}")
     public void updateComment(
             @PathVariable Long commentId,
             @RequestBody Map<String, String> body
@@ -40,7 +40,7 @@ public class BookCommentController {
         commentService.updateComment(commentId, body.get("content"));
     }
 
-    @DeleteMapping("/{commentId}")
+    @PostMapping("/delete/{commentId}")
     public void deleteComment(
             @PathVariable Long commentId
     ) {

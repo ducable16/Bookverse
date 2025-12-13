@@ -41,6 +41,7 @@ public enum ErrorCode {
     SLUG_ALREADY_EXISTS(2013, "Slug already exists", HttpStatus.CONFLICT),
     COMMENT_NOT_FOUND(2014, "Comment not found", HttpStatus.NOT_FOUND),
     PARENT_COMMENT_NOT_FOUND(2015, "Parent comment not found", HttpStatus.NOT_FOUND),
+    HISTORY_NOT_FOUND(2016, "Reading history not found", HttpStatus.NOT_FOUND),
 
     ;
 
