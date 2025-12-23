@@ -23,7 +23,7 @@ public class CustomUserDetailsService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) {
         User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new EntityNotFoundException(ErrorCode.USER_NOT_FOUND));
+                .orElseThrow(() -> new EntityNotFoundException(ErrorCode.USER_NOT_EXISTED));
 
 
         var authorities = user.getRoles().stream()

@@ -89,8 +89,6 @@ public class BookServiceImpl implements BookService {
     public void delete(Long id) {
         Book book = bookRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(ErrorCode.BOOK_NOT_FOUND));
-
-        // Soft delete
         book.setIsDeleted(true);
         book.setIsActive(false);
 
