@@ -50,6 +50,7 @@ public class AuthService {
         String jwt = jwtService.generateToken(dto);
 
         return LoginResponse.builder()
+                .id(user.getId())
                 .token(jwt)
                 .email(user.getEmail())
                 .username(user.getUsername())
