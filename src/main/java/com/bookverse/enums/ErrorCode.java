@@ -20,6 +20,7 @@ public enum ErrorCode {
     USER_EXISTED(1002, "User already exists", HttpStatus.CONFLICT),
     USERNAME_INVALID(1003, "Username must be at least 3 characters", HttpStatus.BAD_REQUEST),
     USERNAME_ALREADY_EXISTS(1004, "Username already exists", HttpStatus.CONFLICT),
+    EMAIL_ALREADY_EXISTS(10041, "Email already exists", HttpStatus.CONFLICT),
     PASSWORD_INVALID(1005, "Password must be at least 8 characters", HttpStatus.BAD_REQUEST),
     WRONG_PASSWORD(1006, "Incorrect password", HttpStatus.BAD_REQUEST),
     USER_NOT_FOUND(1007, "User not found", HttpStatus.NOT_FOUND),
