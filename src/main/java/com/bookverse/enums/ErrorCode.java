@@ -42,6 +42,8 @@ public enum ErrorCode {
     COMMENT_NOT_FOUND(2014, "Comment not found", HttpStatus.NOT_FOUND),
     PARENT_COMMENT_NOT_FOUND(2015, "Parent comment not found", HttpStatus.NOT_FOUND),
     HISTORY_NOT_FOUND(2016, "Reading history not found", HttpStatus.NOT_FOUND),
+    SAVED_BOOK_NOT_FOUND(2017, "Saved book not found", HttpStatus.NOT_FOUND),
+    BOOK_ALREADY_SAVED(2018, "Book already saved", HttpStatus.CONFLICT),
 
     ;
 

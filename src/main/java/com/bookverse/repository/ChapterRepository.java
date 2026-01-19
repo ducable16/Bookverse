@@ -24,22 +24,36 @@ public interface ChapterRepository extends JpaRepository<Chapter, Long> {
     long countByBookId(Long bookId);
 
     // Full-text search in chapter content - trả về các book có chapter match
-    @Query("SELECT DISTINCT c.book FROM Chapter c " +
-           "LEFT JOIN c.book b " +
-           "LEFT JOIN b.author a " +
-           "LEFT JOIN b.categories cat " +
-           "WHERE (LOWER(c.content) LIKE LOWER(CONCAT('%', :keyword, '%')) " +
-           "OR LOWER(c.title) LIKE LOWER(CONCAT('%', :keyword, '%'))) " +
-           "AND (:authorId IS NULL OR a.id = :authorId) " +
-           "AND (:categoryId IS NULL OR cat.id = :categoryId)")
+    @Query("""
+    SELECT b FROM Book b
+    WHERE
+        (
+            :keyword IS NULL OR
+            EXISTS (
+                SELECT 1 FROM Chapter c
+                WHERE c.book = b
+                  AND (
+                      LOWER(c.content) LIKE LOWER(CONCAT('%', :keyword, '%'))
+                      OR LOWER(c.title) LIKE LOWER(CONCAT('%', :keyword, '%'))
+                  )
+            )
+        )
+      AND (:authorId IS NULL OR b.author.id = :authorId)
+      AND (
+           :categoryId IS NULL OR
+           EXISTS (
+               SELECT 1 FROM b.categories cat
+               WHERE cat.id = :categoryId
+           )
+      )
+""")
     Page<Book> searchBooksInChapterContent(
-        @Param("keyword") String keyword,
-        @Param("authorId") Long authorId,
-        @Param("categoryId") Long categoryId,
-        Pageable pageable
+            @Param("keyword") String keyword,
+            @Param("authorId") Long authorId,
+            @Param("categoryId") Long categoryId,
+            Pageable pageable
     );
 
-    // Tìm các chapter matching để highlight - lấy chapter đầu tiên có match
     @Query("SELECT c FROM Chapter c " +
            "WHERE c.book.id = :bookId " +
            "AND (LOWER(c.content) LIKE LOWER(CONCAT('%', :keyword, '%')) " +

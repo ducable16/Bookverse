@@ -161,11 +161,11 @@ public class BookSearchServiceImpl implements BookSearchService {
         Sort sort;
         if ("relevance".equalsIgnoreCase(sortBy)) {
             // Relevance sorting - mặc định sort by createdAt DESC
-            sort = Sort.by(Sort.Direction.DESC, "createdAt");
-        } else if ("createdAt".equalsIgnoreCase(sortBy)) {
+            sort = Sort.by(Sort.Direction.DESC, "createdDate");
+        } else if ("createdDate".equalsIgnoreCase(sortBy)) {
             sort = Sort.by(
                 "DESC".equalsIgnoreCase(sortDirection) ? Sort.Direction.DESC : Sort.Direction.ASC,
-                "createdAt"
+                "createdDate"
             );
         } else {
             // Default: sort by title
